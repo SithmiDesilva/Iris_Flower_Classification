@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
+import pickle
 
 app = Flask(__name__)
 
@@ -19,11 +20,22 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_
 
 # Train the KNN model
 knn = KNeighborsClassifier(n_neighbors=3)
-knn.fit(x_train, y_train)  # Train the model once when the app starts
+knn.fit(x_train, y_train)
+
+# Save the trained model using pickle
+with open("knn_model.pkl", "wb") as model_file:
+    pickle.dump(knn, model_file)
+
+# Load the model from the pickle file
+def load_model():
+    with open("knn_model.pkl", "rb") as model_file:
+        return pickle.load(model_file)
+
+knn_model = load_model()
 
 @app.route('/')
 def home():
-    return render_template('Iris.html')  # Render the template
+    return render_template('Iris.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -41,11 +53,10 @@ def predict():
         "petal_width": [petal_width]
     })
 
-    # Make a prediction using the trained model
-    prediction = knn.predict(new_data)
+    # Make a prediction using the loaded model
+    prediction = knn_model.predict(new_data)
     predicted_class = prediction[0]
 
-    # Return the prediction result to the template
     return render_template('Iris.html', prediction_text=f'Predicted Iris Class: {predicted_class}')
 
 if __name__ == '__main__':
