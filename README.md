@@ -17,7 +17,5 @@ This project implements an **Iris Flower Classification** model using machine le
 ## 📉 Visualizations
 - **Pairplot** to visualize feature distributions
 
-## 👨‍💻 Mail me:
-suveendradesilva@gmail.com 
 
 
